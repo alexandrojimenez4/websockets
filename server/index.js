@@ -8,9 +8,9 @@ var messages = [{
 	id:1,
 	text: "hola soy un mensaje",
 	author: "Edwin"
-}]
+}];
 
-app.use(express.static('public'))
+app.use(express.static('public'));
 
 app.get("/", function(req, res) {
 	res.status(200).send("Hola mundo!");
