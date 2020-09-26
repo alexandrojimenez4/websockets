@@ -3,14 +3,20 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+const faker = require('faker')
 
 var messages = [{
-	id:1,
+	id: faker.random.uuid(),
 	text: "hola soy un mensaje",
-	author: "Edwin"
+	author: "Edwin",
+	send_at: '2019 - 02 - 28'
 }];
 
-app.use(express.static('public'));
+function getDateNow() {
+	const today = new Date()
+	const date = `Send at ${today.getDate()} - ${(today.getMonth()+1)} - ${today.getFullYear()}`
+	return date
+}
 
 app.get("/", function(req, res) {
 	res.status(200).send("Hola mundo!");
@@ -21,11 +27,11 @@ io.on('connection', function(socket) {
 	socket.emit('messages', messages);
 
 	socket.on('new-message', function(data) {
-		messages.push(data);
+		messages.push({id: faker.random.uuid(), ...data, send_at: getDateNow()});
 		io.sockets.emit('messages', messages)
 	})
 });
 
 server.listen(3001, function(){
-	console.log('Servidor corriendo...')
+	console.log('Servidor corriendo en el puerto 3001...')
 });
