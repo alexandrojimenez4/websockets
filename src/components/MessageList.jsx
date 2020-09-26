@@ -14,7 +14,7 @@ class MessageList extends React.Component {
             <ul className="list-unstyled">
                 {this.props.data.map((message) => {
                     return (
-                        <Message key={message} data={message} />
+                        <Message key={message.id} message={message} author={this.props.author} />
                     )
                 })}
             </ul>

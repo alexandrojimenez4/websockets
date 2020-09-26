@@ -2,13 +2,15 @@ import React from 'react'
 import ChatForm from '../components/ChatForm'
 import MessagesList from '../components/MessageList'
 import io from "socket.io-client"
-import api from '../api'
+
+const socket = io.connect('http://localhost:3001', { 'forceNew': true })
 
 class Chat extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            author: '',
             loading: true,
             error: null,
             form: {
@@ -19,19 +21,26 @@ class Chat extends React.Component {
         }
     }
 
+    componentDidMount() {
+        socket.on("messages", data => this.setState({ data: data }));
+    }
+
     handleSubmit = async e => {
         e.preventDefault()
         console.log('submit')
-        this.setState({loading:true, error: null})
-        try {
-            await api.create(this.state.form)
-            this.setState({loading: false, error: null})
-        } catch(error) {
-            this.setState({loading: false, error: error})
+        const message = {
+            id: Math.floor(Math.random() * 1000),
+            ...this.state.form,
         }
+        socket.emit('new-message', message)
     }
 
     handleChange = (e) => {
+        if (e.target.name === 'author') {
+            this.setState({
+                author: e.target.value
+            })
+        }
         this.setState({
             form: {
                 ...this.state.form,
@@ -42,10 +51,10 @@ class Chat extends React.Component {
 
     render() {
         return (
-            <div>
-                <h1>My app chat</h1>
+            <div className="container">
+                <h1 className="text-center">Hello world app</h1>
                 <div className="Messages__container">
-                    <MessagesList data={this.state.data} />
+                    <MessagesList data={this.state.data} author={this.state.author} />
                 </div>
                 <ChatForm
                     onSubmit={this.handleSubmit} 
