@@ -25,6 +25,12 @@ class Chat extends React.Component {
         socket.on("messages", data => this.setState({ data: data }));
     }
 
+    componentWillUnmount() {
+        if (socket.disconnected) {
+            socket.disconnect()
+        }
+    }
+
     handleSubmit = async e => {
         e.preventDefault()
         console.log('submit')
